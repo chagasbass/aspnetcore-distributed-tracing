@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using MinimalApi.Extensions.Entities;
 using MinimalApi.Shared;
 using MinimalApiUm.ApplicationServices.Contracts;
 
@@ -16,13 +17,13 @@ namespace MinimalApiUm.ApplicationServices.Services
             _baseConfigurationOptions = options.Value;
         }
 
-        public async Task<string> BuscarCategoriaAsync(Guid id)
+        public async Task<CommandResult> BuscarCategoriaAsync(Guid id)
         {
             var externalClient = _httpClient.CreateClient();
 
             var urlConsumo = $"{_baseConfigurationOptions.URlConsumo}?={id}";
 
-            var categoriaResponse = await externalClient.GetFromJsonAsync<string>(urlConsumo);
+            var categoriaResponse = await externalClient.GetFromJsonAsync<CommandResult>(urlConsumo);
 
             return categoriaResponse;
         }

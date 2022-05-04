@@ -1,4 +1,4 @@
-﻿using MinimalApi.Data.DataContext;
+﻿using MinimalApiUm.Data.DataContext;
 using MinimalApiUm.Domain.Entities;
 using MinimalApiUm.Domain.Repositories;
 

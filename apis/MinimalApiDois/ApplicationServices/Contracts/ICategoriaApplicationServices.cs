@@ -1,8 +1,8 @@
 ﻿using MinimalApi.Extensions.Entities;
 
-namespace MinimalApiUm.ApplicationServices.Contracts
+namespace MinimalApiDois.ApplicationServices.Contracts
 {
-    public interface ICategoriaExternalServices
+    public interface ICategoriaApplicationServices
     {
         Task<CommandResult> BuscarCategoriaAsync(Guid id);
     }

@@ -1,20 +1,18 @@
-﻿using Flunt.Notifications;
-using Microsoft.EntityFrameworkCore;
-using MinimalApiUm.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using MinimalApiDois.Domain.Entities;
 using System.Reflection;
 
-namespace MinimalApiUm.Data.DataContext
+namespace MinimalApiDois.Data.DataContext
 {
     public class MinimalApiDataContext : DbContext
     {
-        public DbSet<Produto> Produtos { get; set; }
+        public DbSet<Categoria> Categorias { get; set; }
 
         public MinimalApiDataContext(DbContextOptions<MinimalApiDataContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-            modelBuilder.Ignore<Notification>();
 
             base.OnModelCreating(modelBuilder);
         }
