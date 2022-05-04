@@ -10,8 +10,8 @@ namespace MinimalApi.Extensions.Extensions
     {
         public static IServiceCollection AddTelemetryTracing(this IServiceCollection services, IConfiguration configuration)
         {
-            var agentHost = configuration["JaeggerConfiguration:AgentHost"];
-            var agentPort = Convert.ToInt32(configuration["JaeggerConfiguration:AgentPort"]);
+            var agentHost = configuration["JaegerConfiguration:AgentHost"];
+            var agentPort = Convert.ToInt32(configuration["JaegerConfiguration:AgentPort"]);
 
             services.AddOpenTelemetryTracing(traceProvider =>
             {

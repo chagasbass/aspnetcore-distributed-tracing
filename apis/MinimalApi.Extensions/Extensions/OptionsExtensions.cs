@@ -11,7 +11,7 @@ namespace MinimalApi.Extensions
         {
             services.Configure<BaseConfigurationOptions>(configuration.GetSection(BaseConfigurationOptions.BaseConfig));
             services.Configure<ApiRolesConfigurationOptions>(configuration.GetSection(ApiRolesConfigurationOptions.ApiRolesConfig));
-            services.Configure<JaeggerConfigurationOptions>(configuration.GetSection(JaeggerConfigurationOptions.JaeggerConfig));
+            services.Configure<JaegerConfigurationOptions>(configuration.GetSection(JaegerConfigurationOptions.JaegerConfig));
 
             return services;
         }
