@@ -1,7 +1,9 @@
-﻿namespace MinimalApiDois.ApplicationServices.Contracts
+﻿using MinimalApiDois.Domain.Entities;
+
+namespace MinimalApiDois.ApplicationServices.Contracts
 {
     public interface IMensagemExternalServices
     {
-        Task EnviarMensagemAsync(string mensagem);
+        Task EnviarMensagemAsync(Mensagem mensagem);
     }
 }

@@ -1,12 +1,13 @@
 ﻿using MinimalApi.Extensions.Entities;
 using MinimalApi.Extensions.Extensions.OpenTelemetry;
 using MinimalApiUm.ApplicationServices.Dtos;
+using MinimalApiUm.Domain.Entities;
 using System.Diagnostics;
 using System.Text.Json;
 
 namespace MinimalApiUm.ApplicationServices.Bases
 {
-    public abstract class BaseApplicationServices
+    public abstract class BaseApplicationServices<T>
     {
         private readonly ActivitySource _activitySource;
         private Activity _activity;
@@ -16,21 +17,28 @@ namespace MinimalApiUm.ApplicationServices.Bases
             _activitySource = OpenTelemetryExtensions.CreateActivitySource();
         }
 
-        public void StartActivitySource()
+        public Activity StartActivitySource(string nomeController)
         {
-            using var activity = _activitySource.StartActivity($"Construtor (ProdutoController/ProdutoApplicationServices)");
+            using var activity = _activitySource.StartActivity($"API de Produtos ({nomeController})");
             activity!.SetTag("horario", $"{DateTime.Now:HH:mm:ss dd/MM/yyyy}");
 
-            _activity = activity;
+            return activity;
         }
 
-        public CommandResult AddActivityData(InserirProdutoDto request, CommandResult commandResult)
+        public void AddActivityData(Activity activity, InserirProdutoDto request, object data)
         {
-            _activity!.SetTag("ContratoRecebido", JsonSerializer.Serialize(request));
-            _activity!.SetTag("Origem", OpenTelemetryExtensions.Local);
-            _activity!.SetTag("Retorno", JsonSerializer.Serialize(commandResult));
+            activity!.SetTag("ContratoRecebido", JsonSerializer.Serialize(request));
+            activity!.SetTag("Origem", OpenTelemetryExtensions.Local);
+            activity!.SetTag("Retorno", JsonSerializer.Serialize(data));
+        }
 
-            return commandResult;
+        public Categoria RecuperarDadosDeCategoria(CommandResult categoriaResultado)
+        {
+            var dadoRecebido = categoriaResultado.Data;
+
+            var categoriaJson = dadoRecebido.ToString();
+
+            return JsonSerializer.Deserialize<Categoria>(categoriaJson);
         }
     }
 }

@@ -6,6 +6,9 @@ using MinimalApiUm.ApplicationServices.Contracts;
 using MinimalApiUm.ApplicationServices.Dtos;
 using MinimalApiUm.Extensions;
 
+
+//jaeger url http://localhost:16686/search
+
 var builder = WebApplication.CreateBuilder(args);
 
 var configuration = builder.Configuration;
@@ -31,7 +34,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 MapProdutoActions(app);
 

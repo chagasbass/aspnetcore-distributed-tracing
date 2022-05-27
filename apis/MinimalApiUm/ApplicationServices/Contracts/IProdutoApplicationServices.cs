@@ -5,6 +5,6 @@ namespace MinimalApiUm.ApplicationServices.Contracts
 {
     public interface IProdutoApplicationServices
     {
-        Task<ICommandResult> InserirProdutoAsync(InserirProdutoDto inserirProdutoDto);
+        Task<CommandResult> InserirProdutoAsync(InserirProdutoDto inserirProdutoDto);
     }
 }

@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.Options;
 using MinimalApi.Shared;
 using MinimalApiDois.ApplicationServices.Contracts;
+using MinimalApiDois.Domain.Entities;
+using System.Text;
+using System.Text.Json;
 
 namespace MinimalApiDois.ApplicationServices.Services
 {
@@ -16,18 +19,15 @@ namespace MinimalApiDois.ApplicationServices.Services
             _baseConfigurationOptions = options.Value;
         }
 
-        public async Task EnviarMensagemAsync(string mensagem)
+        public async Task EnviarMensagemAsync(Mensagem mensagem)
         {
             var externalClient = _httpClient.CreateClient();
 
             var urlConsumo = $"{_baseConfigurationOptions.URlConsumo}";
 
-            var requestMessage = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                Content = new StringContent(mensagem),
-                RequestUri = new Uri(urlConsumo)
-            };
+            var json = JsonSerializer.Serialize(mensagem);
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, urlConsumo);
+            requestMessage.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
             await externalClient.SendAsync(requestMessage);
         }

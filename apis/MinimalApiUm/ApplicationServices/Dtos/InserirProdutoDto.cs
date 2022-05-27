@@ -8,6 +8,7 @@ namespace MinimalApiUm.ApplicationServices.Dtos
         public string? Nome { get; set; }
         public decimal Preco { get; set; }
         public Guid CategoriaId { get; set; }
+        public string NomeCategoria { get; set; }
 
         public InserirProdutoDto() { }
 

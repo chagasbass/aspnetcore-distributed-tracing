@@ -3,6 +3,7 @@ using MinimalApi.Extensions;
 using MinimalApi.Extensions.Entities;
 using MinimalApi.Extensions.Extensions;
 using MinimalApiDois.ApplicationServices.Contracts;
+using MinimalApiDois.ApplicationServices.Dtos;
 using MinimalApiDois.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,7 +32,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 
 MapCategoriaActions(app);
@@ -40,8 +41,8 @@ app.Run();
 
 void MapCategoriaActions(WebApplication app)
 {
-    app.MapGet("/categorias", async (
-       [FromQuery] Guid id,
+    app.MapGet("/categorias/{id}", async (
+       [FromRoute] Guid id,
        ICategoriaApplicationServices categoriaServices) =>
     {
         var commandResult = await categoriaServices.BuscarCategoriaAsync(id);
@@ -53,5 +54,20 @@ void MapCategoriaActions(WebApplication app)
     }).Produces<CommandResult>(StatusCodes.Status200OK)
        .Produces(StatusCodes.Status400BadRequest)
        .WithName("BuscarCategoriaAsync")
+       .WithTags("Categorias");
+
+    app.MapPost("/categorias", async (
+        InserirCategoriaDto inserirCategoriaDto,
+        ICategoriaApplicationServices categoriaServices) =>
+    {
+        var commandResult = (CommandResult)await categoriaServices.InserirCategoriaAsync(inserirCategoriaDto);
+
+        return commandResult.Success != false
+         ? Results.Created("InserirCategoriasAsync", commandResult)
+         : Results.BadRequest(commandResult);
+
+    }).Produces<CommandResult>(StatusCodes.Status201Created)
+       .Produces(StatusCodes.Status400BadRequest)
+       .WithName("InserirCategoriasAsync")
        .WithTags("Categorias");
 }

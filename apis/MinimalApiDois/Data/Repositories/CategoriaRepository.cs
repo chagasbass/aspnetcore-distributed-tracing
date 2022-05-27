@@ -17,5 +17,13 @@ namespace MinimalApiDois.Data.Repositories
         {
             return await _context.Categorias.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         }
+
+        public async Task<Categoria> InserirCategoriaAsync(Categoria categoria)
+        {
+            await _context.Categorias.AddAsync(categoria);
+            await _context.SaveChangesAsync();
+
+            return categoria;
+        }
     }
 }

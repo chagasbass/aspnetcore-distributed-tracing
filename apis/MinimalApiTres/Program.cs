@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using MinimalApi.Extensions;
 using MinimalApi.Extensions.Entities;
 using MinimalApi.Extensions.Extensions;
+using MinimalApiTres;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +27,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 MapEndpointActions(app);
 
@@ -36,11 +37,16 @@ app.Run();
 void MapEndpointActions(WebApplication app)
 {
     app.MapPost("/mensagens", async (
-        [FromBody] string mensagem) =>
+        [FromBody] Mensagem mensagem) =>
     {
-        var commandResult = new CommandResult(true, "A mensagem foi enviada com sucesso");
+        var extensions = new MinimalApi3Extensions();
+        var dados = MinimalApi3Extensions.GetActualAsyncMethodName();
 
-        return Results.Created("/mensagens", commandResult);
+        var activity = extensions.StartActivitySource($"Endpoint/Mensagens/{dados}");
+
+        var commandResult = new CommandResult(mensagem, true, "A mensagem foi enviada com sucesso");
+
+        return extensions.AddActivityData(activity, mensagem.Conteudo, commandResult);
 
     }).Produces<CommandResult>(StatusCodes.Status201Created)
       .WithName("EnviarMensagemAsync")

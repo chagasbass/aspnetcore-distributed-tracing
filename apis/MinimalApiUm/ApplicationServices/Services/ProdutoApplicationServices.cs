@@ -4,13 +4,16 @@ using MinimalApiUm.ApplicationServices.Contracts;
 using MinimalApiUm.ApplicationServices.Dtos;
 using MinimalApiUm.Domain.Entities;
 using MinimalApiUm.Domain.Repositories;
+using System.Runtime.CompilerServices;
 
 namespace MinimalApiUm.ApplicationServices.Services
 {
-    public class ProdutoApplicationServices : BaseApplicationServices, IProdutoApplicationServices
+    public class ProdutoApplicationServices : BaseApplicationServices<InserirProdutoDto>, IProdutoApplicationServices
     {
         private readonly IProdutoRepository _produtoRepository;
         private readonly ICategoriaExternalServices _categoriaExternalServices;
+
+        private const string _controllerName = "ProdutoController";
 
         public ProdutoApplicationServices(IProdutoRepository produtoRepository,
                                           ICategoriaExternalServices categoriaExternalServices)
@@ -19,37 +22,45 @@ namespace MinimalApiUm.ApplicationServices.Services
             _categoriaExternalServices = categoriaExternalServices;
         }
 
-        public async Task<ICommandResult> InserirProdutoAsync(InserirProdutoDto inserirProdutoDto)
+        public async Task<CommandResult> InserirProdutoAsync(InserirProdutoDto inserirProdutoDto)
         {
-            StartActivitySource();
+            var method = ExtensionHelper.GetActualAsyncMethodName();
+            var dadosDeExecucao = $"{_controllerName}/{this.GetType().Name}/{method}";
+
+            var activity = StartActivitySource(dadosDeExecucao);
 
             inserirProdutoDto.ValidarProduto();
 
-            CommandResult commandResult;
-
             if (!inserirProdutoDto.IsValid)
             {
-                commandResult = new CommandResult(inserirProdutoDto.Notifications, false, "Problemas ao inserir o produto");
+                var _errorCommandResult = new CommandResult(inserirProdutoDto.Notifications, false, "Problemas ao inserir o produto");
 
-                return AddActivityData(inserirProdutoDto, commandResult);
+                AddActivityData(activity, inserirProdutoDto, _errorCommandResult);
+                return _errorCommandResult;
             }
 
             var dadosCategoria = await _categoriaExternalServices.BuscarCategoriaAsync(inserirProdutoDto.CategoriaId);
 
+            Categoria novaCategoria = null;
+
             if (!dadosCategoria.Success)
             {
-                commandResult = new CommandResult(false, dadosCategoria.Message);
+                var categoriaResultado = await _categoriaExternalServices.InserirCategoriaAsync(new InserirCategoriaDto { Nome = inserirProdutoDto.NomeCategoria });
 
-                return AddActivityData(inserirProdutoDto, commandResult);
+                novaCategoria = RecuperarDadosDeCategoria(categoriaResultado);
             }
 
-            var novoProduto = new Produto(inserirProdutoDto.Nome, inserirProdutoDto.Preco, inserirProdutoDto.CategoriaId, (string)dadosCategoria.Data);
+            var novoProduto = new Produto(inserirProdutoDto.Nome, inserirProdutoDto.Preco, inserirProdutoDto.CategoriaId, novaCategoria.Nome);
 
             await _produtoRepository.InserirProdutoAsync(novoProduto);
 
-            commandResult = new CommandResult(novoProduto.Id, true, "Produto Inserido com sucesso");
+            var commandResult = new CommandResult(novoProduto.Id, true, "Produto Inserido com sucesso");
 
-            return AddActivityData(inserirProdutoDto, commandResult);
+            AddActivityData(activity, inserirProdutoDto, commandResult);
+
+            return commandResult;
         }
     }
+
+    public static class ExtensionHelper { public static string GetActualAsyncMethodName([CallerMemberName] string name = null) => name; }
 }

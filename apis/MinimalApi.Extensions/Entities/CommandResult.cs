@@ -1,14 +1,21 @@
-﻿namespace MinimalApi.Extensions.Entities
+﻿using System.Text.Json.Serialization;
+
+namespace MinimalApi.Extensions.Entities
 {
     public class CommandResult : ICommandResult
     {
+        [JsonPropertyName("success")]
         public bool Success { get; set; }
-        public string Message { get; set; }
+
+        [JsonPropertyName("message")]
+        public string? Message { get; set; }
+
+        [JsonPropertyName("data")]
         public object Data { get; set; }
 
         public CommandResult() { }
 
-        public CommandResult(object data, bool sucess = false, string message = "")
+        public CommandResult(object data, bool sucess = false, string? message = "")
         {
             Success = sucess;
             Message = message;
